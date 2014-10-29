@@ -41,12 +41,12 @@ class RetrieveSongs(object):
     #                 tempdictionary = {'track':value[0]}
     #                 for k2, v2 in tempdictionary.items():
     #                     RetrieveSongs().runThrough(v2)
-    #                     # tempdictionary = dict(v2)
+    #                     tempdictionary = dict(v2)
     #                     print 'second dict loop'
-    #                     # for k3, v3 in tempdictionary.items():
-    #                     #     if isinstance(v3, dict):
-    #                     #         print 'third dict loop'
-    #                     #         RetrieveSongs().runThrough(v3)
+    #                     for k3, v3 in tempdictionary.items():
+    #                         if isinstance(v3, dict):
+    #                             print 'third dict loop'
+    #                             RetrieveSongs().runThrough(v3)
 
     # def runThrough(self, *args):
     #     print '\n'
@@ -54,44 +54,44 @@ class RetrieveSongs(object):
     #         if isinstance(value, dict):
     #             RetrieveSongs().runThrough(value)
     #         else:
-    #             print 
-    #             # gatherList = {
-    #             # "album":    args[0].get('album').encode('utf-8'),
-    #             # "artist":    tempList[x].get('artist').encode('utf-8'),
-    #             # "name":    tempList[x].get('title').encode('utf-8'),
-    #             # "trackNumber":    tempList[x].get('trackNumber')
-    #             # }
+    #             print
+    #             gatherList = {
+    #             "album":    args[0].get('album').encode('utf-8'),
+    #             "artist":    tempList[x].get('artist').encode('utf-8'),
+    #             "name":    tempList[x].get('title').encode('utf-8'),
+    #             "trackNumber":    tempList[x].get('trackNumber')
+    #             }
 
 
 
-    #         # tempdict2 = dict(tempdictionary['tracks'])
-    #         # print tempdict2.keys()
+    #         tempdict2 = dict(tempdictionary['tracks'])
+    #         print tempdict2.keys()
 
 
 
-    #         # for y in range(len(tempdictionary.keys())):
-    #         #     print tempdictionary['tracks']
-    #     # print range(len(playListTemp))
-    #     # newPlaylistDict = {}
-    #     # for x in range(len(playListTemp)):
-    #     #     tempstr = str('playlist')+str(x)
-    #     #     tempdictionary = {tempstr:dict(playListTemp[x])}
-    #     #     newPlaylistDict.update(tempdictionary)
+    #         for y in range(len(tempdictionary.keys())):
+    #             print tempdictionary['tracks']
+    #     print range(len(playListTemp))
+    #     newPlaylistDict = {}
+    #     for x in range(len(playListTemp)):
+    #         tempstr = str('playlist')+str(x)
+    #         tempdictionary = {tempstr:dict(playListTemp[x])}
+    #         newPlaylistDict.update(tempdictionary)
 
-    #     # print newPlaylistDict.items()
-    #     # print newPlaylistDict['playlist'].values()
+    #     print newPlaylistDict.items()
+    #     print newPlaylistDict['playlist'].values()
 
-    #     # for x in range(len(newPlaylistDict)):
-    #     #     plname = newPlaylistDict['playlist']['name']
-    #     #     for y in range(len(newPlaylistDict['playlist']['tracks']['track'])):
-    #     #         gatherList = {
-    #     #             "album": 0,
-    #     #             "artist": 0,
-    #     #             "name": 0,
-    #     #             "trackNumber": 0,
-    #     #             "playlist": 0
-    #     #         }
-    #     #     content.append(gatherList)
+    #     for x in range(len(newPlaylistDict)):
+    #         plname = newPlaylistDict['playlist']['name']
+    #         for y in range(len(newPlaylistDict['playlist']['tracks']['track'])):
+    #             gatherList = {
+    #                 "album": 0,
+    #                 "artist": 0,
+    #                 "name": 0,
+    #                 "trackNumber": 0,
+    #                 "playlist": 0
+    #             }
+    #         content.append(gatherList)
     #     return content
 
 class WriteOut(object):
