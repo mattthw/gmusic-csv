@@ -11,7 +11,6 @@ class verifyUser(object):
         logged_in = api.login(raw_input('username\n: '), getpass.getpass('\nNOTICE: if you use secondary authentication use an app specific password!\npassword (hidden)\n: '))
             # IMPORTANT: If you use secondary authentication for gogle music
             # you need to generate an app specific password!
-            #ufbwurvbjkxiljnk
         return logged_in
 
 class RetrieveSongs(object):
