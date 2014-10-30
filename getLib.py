@@ -11,8 +11,15 @@ import sys
 class verifyUser(object):
     def login(self, *args):
         print 'attempting to login.'
+<<<<<<< HEAD
         api.login(raw_input('username\n: '), getpass.getpass('\nNOTICE: if you use secondary authentication use an app specific password!\npassword (hidden)\n: '))
 
+=======
+        logged_in = api.login(raw_input('username\n: '), getpass.getpass('\nNOTICE: if you use secondary authentication use an app specific password!\npassword (hidden)\n: '))
+            # IMPORTANT: If you use secondary authentication for gogle music
+            # you need to generate an app specific password!
+        return logged_in
+>>>>>>> 31d4bafe68de80cb2275a9c0712dee23d685b85c
 
 class RetrieveSongs(object):
     def songList(self):
