@@ -7,8 +7,17 @@ import getpass, os.path
 import sys, getopt
 """"(CallFailure, ParseException, ValidationException,
     AlreadyLoggedIn, NotLoggedIn)"""
+#GLOBAL VARS
+api = Mobileclient()
+content = []
+helpString = ("usage: gmusic-csv [option]\noptions:"
+                +"\n    -o <filename>    :    preemptively name CSV file"
+                +"\n    -p '<playlist>'  :    get songs in playlist"
+                +"\n    -h               :    display this menu\nexample:"
+                +"\n    gmusic-csv -o my_library"
+                +"\n    gmusic-csv -p 'summer 2013'")
 
-class verifyUser(object):
+class Credintials(object):
     def login(self, *args):
         print 'Please log in. Secondary authentication users need an app-specific password.\nPassword will not be stored.'
         api.login(
@@ -16,8 +25,9 @@ class verifyUser(object):
             getpass.getpass('password: '),
             api.FROM_MAC_ADDRESS)
 
-class RetrieveSongs(object):
-    def getLibrary(self):
+class Library(object):
+    #get all music owned by user
+    def getMusic(self):
         try:
             print('retrieving library.'),
             tempList = api.get_all_songs()
@@ -33,21 +43,7 @@ class RetrieveSongs(object):
         except NotLoggedIn:
             sys.exit("Could not log in - verify credintials.")
 
-    def getUserPlist(self):
-        print "not implemented"
-
-    def getSharedPlist(self):
-        print "not implemented"
-
-    def main(self, option):
-        if str(option) == "shared":
-            self.getSharedPlist()
-        elif str(option) == "user":
-            self.getUserPlist()
-        else:
-            self.getLibrary()
-            
-class RetrievPlaylist(object):
+    #get songs from specified playlist in users collection
     def getPlaylist(self, name):
         try:
             print('retrieving playlist.'),
@@ -75,6 +71,7 @@ class RetrievPlaylist(object):
         except NotLoggedIn:
             sys.exit("Could not log in - verify credintials.")
 
+
 class WriteOut(object):
     def writeToFile(self, filename):
         if "." in filename:
@@ -99,22 +96,19 @@ class WriteOut(object):
         except IOError:
             sys.exit("<Error> Invalid filename!")
 
-#GLOBAL VARS
-api = Mobileclient()
-content = []
 
 def main(argv):
-    option = "library"
+    # option = "library"
     filename = ""
     playlist = ""
     try:
         opts, args = getopt.getopt(argv, "hp:o:")
     except:
-        print("usage: gmusic-csv [option]\noptions:\n    -o <filename>    :    preemptively name CSV file\n    -h               :    display this menu\nexample:\n    gmusic-csv -o my_library")
+        print(helpString)
         sys.exit(2)
     for flag, argument in opts:
         if flag == "-h":
-            print("usage: gmusic-csv [option]\noptions:\n    -o <filename>    :    preemptively name CSV file\n    -h               :    display this menu\nexample:\n    gmusic-csv -o my_library")
+            print(helpString)
             sys.exit(2)
         elif flag == "-o":
             filename = str(argument)
@@ -123,11 +117,14 @@ def main(argv):
                 sys.exit(2)
         elif flag == "-p":
             playlist = str(argument)
-    verifyUser().login()
+    Credintials().login()
     if playlist == "":
-        RetrieveSongs().main(option)
+        Library().getMusic()
     else:
-        RetrievPlaylist().getPlaylist(playlist)
+        Library().getPlaylist(playlist)
+        if len(content) <=1:
+            print '{} does not exist as a playlist. Try again.'.format(playlist)
+            sys.exit(2)
     WriteOut().writeToFile(filename)
 
 if __name__ == '__main__':
