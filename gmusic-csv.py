@@ -13,7 +13,8 @@ class verifyUser(object):
         print 'Please log in. Secondary authentication users need an app-specific password.\nPassword will not be stored.'
         api.login(
             raw_input('username: '),
-            getpass.getpass('password: '))
+            getpass.getpass('password: '),
+            api.FROM_MAC_ADDRESS)
 
 class RetrieveSongs(object):
     def getLibrary(self):
@@ -45,6 +46,34 @@ class RetrieveSongs(object):
             self.getUserPlist()
         else:
             self.getLibrary()
+            
+class RetrievPlaylist(object):
+    def getPlaylist(self, name):
+        try:
+            print('retrieving playlist.'),
+            playlists = api.get_all_user_playlist_contents()
+            allSongs = api.get_all_songs()
+            allSongsDict = dict()
+            for x in range(len(allSongs)):
+                gatherList = {
+                    "album":       allSongs[x].get('album').encode('utf-8'),
+                    "artist":      allSongs[x].get('artist').encode('utf-8'),
+                    "name":        allSongs[x].get('title').encode('utf-8'),
+                    "trackNumber": allSongs[x].get('trackNumber'),
+                    "playCount":   allSongs[x].get('playCount')
+                    }
+                allSongsDict[allSongs[x].get('id')] = gatherList
+            for playlist in playlists:
+                if playlist['name'] == name:
+                    tracks = playlist['tracks']
+                    for track in tracks:
+                        id = track['trackId']
+                        #print(id)
+                        if id in allSongsDict:
+                            print(allSongsDict[id])
+                            content.append(allSongsDict[id])
+        except NotLoggedIn:
+            sys.exit("Could not log in - verify credintials.")
 
 class WriteOut(object):
     def writeToFile(self, filename):
@@ -77,8 +106,9 @@ content = []
 def main(argv):
     option = "library"
     filename = ""
+    playlist = ""
     try:
-        opts, args = getopt.getopt(argv, "ht:o:")
+        opts, args = getopt.getopt(argv, "hp:o:")
     except:
         print("usage: gmusic-csv [option]\noptions:\n    -o <filename>    :    preemptively name CSV file\n    -h               :    display this menu\nexample:\n    gmusic-csv -o my_library")
         sys.exit(2)
@@ -91,10 +121,13 @@ def main(argv):
             if filename == "":
                 print "enter a <filename> when using the -o flag."
                 sys.exit(2)
-        # elif flag == "-t":
-        #     option = str(argument)
+        elif flag == "-p":
+            playlist = str(argument)
     verifyUser().login()
-    RetrieveSongs().main(option)
+    if playlist == "":
+        RetrieveSongs().main(option)
+    else:
+        RetrievPlaylist().getPlaylist(playlist)
     WriteOut().writeToFile(filename)
 
 if __name__ == '__main__':
