@@ -19,29 +19,40 @@ helpString = ("usage: gmusic-csv [option]\noptions:"
 
 class Credintials(object):
     def login(self, *args):
-        print 'Please log in. Secondary authentication users need an app-specific password.\nPassword will not be stored.'
-        api.login(
-            raw_input('username: '),
-            getpass.getpass('password: '),
+        print ('\n===================================================='
+            + '\nPlease log in. Password will not be stored.'
+            + '\nSecondary authentication users need an app-specific \npassword.'
+            + '\n----------------------------------------------------')
+        res = api.login(
+            raw_input('\tusername: '),
+            getpass.getpass('\tpassword: '),
             api.FROM_MAC_ADDRESS)
+        print ('----------------------------------------------------')
+        if (not res):
+            print 'Login failed. Try again or press ctrl+c to cancel.'
+            Credintials.login(self, *args)
+            return
+        else:
+            print 'Login successful!\nnow performing selected or default option...'
+        print ('====================================================')
 
 class Library(object):
     #get all music owned by user
     def getMusic(self):
         try:
-            print('retrieving library.'),
+            print('retrieving library...\n'),
             tempList = api.get_all_songs()
             for x in range(len(tempList)):
                 gatherList = {
-                    "album":       tempList[x].get('album').encode('utf-8'),
-                    "artist":      tempList[x].get('artist').encode('utf-8'),
-                    "name":        tempList[x].get('title').encode('utf-8'),
+                    "album":       tempList[x].get('album').encode('utf-8', errors='ignore'),
+                    "artist":      tempList[x].get('artist').encode('utf-8', errors='ignore'),
+                    "name":        tempList[x].get('title').encode('utf-8', errors='ignore'),
                     "trackNumber": tempList[x].get('trackNumber'),
                     "playCount":   tempList[x].get('playCount')
                     }
                 content.append(gatherList)
         except NotLoggedIn:
-            sys.exit("Could not log in - verify credintials.")
+            sys.exit("Error processing request. Error: NotLoggedIn.")
 
     #get songs from specified playlist in users collection
     def getPlaylist(self, name):
@@ -52,9 +63,9 @@ class Library(object):
             allSongsDict = dict()
             for x in range(len(allSongs)):
                 gatherList = {
-                    "album":       allSongs[x].get('album').encode('utf-8'),
-                    "artist":      allSongs[x].get('artist').encode('utf-8'),
-                    "name":        allSongs[x].get('title').encode('utf-8'),
+                    "album":       allSongs[x].get('album').encode('utf-8', errors='ignore'),
+                    "artist":      allSongs[x].get('artist').encode('utf-8', errors='ignore'),
+                    "name":        allSongs[x].get('title').encode('utf-8', errors='ignore'),
                     "trackNumber": allSongs[x].get('trackNumber'),
                     "playCount":   allSongs[x].get('playCount')
                     }
@@ -84,48 +95,54 @@ class WriteOut(object):
 
         # filename = raw_input('save file as (do not include .csv or any extension!)\n: ')
         if os.path.exists(str(filename)+'.csv'):
-            print filename, ' exists already. Choose another file name.'
-            filename = raw_input(': ')
+            print (filename, ' exists already. Choose another file name.')
+            WriteOut.writeToFile(self, filename)
+            return
         try:
             with open(filename+'.csv','w') as outfile:
-                print(" exporting library to CSV format."),
+                print ("  exporting library to CSV format!"),
                 writer = DictWriter(outfile, ('artist','album','trackNumber','name','playCount'))
                 writer.writeheader()
                 writer.writerows(temp)
-                print(' saved as \''+str(filename)+str('.csv')+'\'')
+                print ('\n  \''+str(filename)+str('.csv')+'\' saved in current directory!')
         except IOError:
             sys.exit("<Error> Invalid filename!")
 
 
 def main(argv):
-    # option = "library"
-    filename = ""
-    playlist = ""
     try:
-        opts, args = getopt.getopt(argv, "hp:o:")
-    except:
-        print(helpString)
-        sys.exit(2)
-    for flag, argument in opts:
-        if flag == "-h":
+        # option = "library"
+        filename = ""
+        playlist = ""
+        try:
+            opts, args = getopt.getopt(argv, "hp:o:")
+        except:
             print(helpString)
             sys.exit(2)
-        elif flag == "-o":
-            filename = str(argument)
-            if filename == "":
-                print "enter a <filename> when using the -o flag."
+        for flag, argument in opts:
+            if flag == "-h":
+                print(helpString)
                 sys.exit(2)
-        elif flag == "-p":
-            playlist = str(argument)
-    Credintials().login()
-    if playlist == "":
-        Library().getMusic()
-    else:
-        Library().getPlaylist(playlist)
-        if len(content) <=1:
-            print '{} does not exist as a playlist. Try again.'.format(playlist)
-            sys.exit(2)
-    WriteOut().writeToFile(filename)
+            elif flag == "-o":
+                filename = str(argument)
+                if filename == "":
+                    print ("enter a <filename> when using the -o flag.")
+                    sys.exit(2)
+            elif flag == "-p":
+                playlist = str(argument)
+        Credintials().login()
+        if playlist == "":
+            Library().getMusic()
+        else:
+            Library().getPlaylist(playlist)
+            if len(content) <=1:
+                print ('{} does not exist as a playlist. Try again.').format(playlist)
+                sys.exit(2)
+        print ('====================================================')
+        WriteOut().writeToFile(filename)
+        print ('====================================================')
+    except KeyboardInterrupt:
+        print "\nShutdown requested...exiting"
 
 if __name__ == '__main__':
     main(sys.argv[1:])
