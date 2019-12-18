@@ -7,6 +7,11 @@ import getpass, os.path
 import sys, getopt
 """"(CallFailure, ParseException, ValidationException,
     AlreadyLoggedIn, NotLoggedIn)"""
+
+# Fix Python 2.x.
+try: input = raw_input
+except NameError: pass
+
 #GLOBAL VARS
 api = Mobileclient()
 content = []
@@ -29,11 +34,11 @@ class Credintials(object):
             res = api.oauth_login(Mobileclient.FROM_MAC_ADDRESS)
         print ('----------------------------------------------------')
         if (not res):
-            print 'Login failed. Try again or press ctrl+c to cancel.'
+            print ('Login failed. Try again or press ctrl+c to cancel.')
             Credintials.login(self, *args)
             return
         else:
-            print 'Login successful!\nnow performing selected or default option...'
+            print ('Login successful!\nnow performing selected or default option...')
         print ('====================================================')
 
 class Library(object):
@@ -88,12 +93,12 @@ class WriteOut(object):
         if "." in filename:
             filename = filename.split(".")[0]
         elif filename == "":
-            filename = raw_input('save file as: ')
+            filename = input('save file as: ')
         temp = sorted(content, key = itemgetter('trackNumber'))
         temp = sorted(temp,    key = itemgetter('album'))
         temp = sorted(temp,    key = itemgetter('artist'))
 
-        # filename = raw_input('save file as (do not include .csv or any extension!)\n: ')
+        # filename = input('save file as (do not include .csv or any extension!)\n: ')
         if os.path.exists(str(filename)+'.csv'):
             print (filename, ' exists already. Choose another file name.')
             WriteOut.writeToFile(self, filename)
@@ -142,7 +147,7 @@ def main(argv):
         WriteOut().writeToFile(filename)
         print ('====================================================')
     except KeyboardInterrupt:
-        print "\nShutdown requested...exiting"
+        print ("\nShutdown requested...exiting")
 
 if __name__ == '__main__':
     main(sys.argv[1:])
