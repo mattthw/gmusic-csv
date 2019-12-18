@@ -5,6 +5,9 @@ from operator             import itemgetter
 from gmusicapi.exceptions import NotLoggedIn
 import getpass, os.path
 import sys, getopt
+if sys.version_info < (3, 0):
+    reload(sys)
+    sys.setdefaultencoding("utf-8")
 """"(CallFailure, ParseException, ValidationException,
     AlreadyLoggedIn, NotLoggedIn)"""
 
@@ -49,9 +52,9 @@ class Library(object):
             tempList = api.get_all_songs()
             for x in range(len(tempList)):
                 gatherList = {
-                    "album":       tempList[x].get('album').encode('utf-8', errors='ignore'),
-                    "artist":      tempList[x].get('artist').encode('utf-8', errors='ignore'),
-                    "name":        tempList[x].get('title').encode('utf-8', errors='ignore'),
+                    "album":       tempList[x].get('album'),
+                    "artist":      tempList[x].get('artist'),
+                    "name":        tempList[x].get('title'),
                     "trackNumber": tempList[x].get('trackNumber'),
                     "playCount":   tempList[x].get('playCount')
                     }
@@ -68,9 +71,9 @@ class Library(object):
             allSongsDict = dict()
             for x in range(len(allSongs)):
                 gatherList = {
-                    "album":       allSongs[x].get('album').encode('utf-8', errors='ignore'),
-                    "artist":      allSongs[x].get('artist').encode('utf-8', errors='ignore'),
-                    "name":        allSongs[x].get('title').encode('utf-8', errors='ignore'),
+                    "album":       allSongs[x].get('album'),
+                    "artist":      allSongs[x].get('artist'),
+                    "name":        allSongs[x].get('title'),
                     "trackNumber": allSongs[x].get('trackNumber'),
                     "playCount":   allSongs[x].get('playCount')
                     }
