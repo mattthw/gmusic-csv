@@ -19,14 +19,14 @@ helpString = ("usage: gmusic-csv [option]\noptions:"
 
 class Credintials(object):
     def login(self, *args):
-        print ('\n===================================================='
-            + '\nPlease log in. Password will not be stored.'
-            + '\nSecondary authentication users need an app-specific \npassword.'
-            + '\n----------------------------------------------------')
-        res = api.login(
-            raw_input('\tusername: '),
-            getpass.getpass('\tpassword: '),
-            api.FROM_MAC_ADDRESS)
+        res = api.oauth_login(Mobileclient.FROM_MAC_ADDRESS)
+        if (not res):
+            print ('\n===================================================='
+                + '\nPlease log in. Credentials will be saved as'
+                + '\n' + Mobileclient.OAUTH_FILEPATH + '.'
+                + '\n----------------------------------------------------')
+            Mobileclient.perform_oauth(storage_filepath=Mobileclient.OAUTH_FILEPATH, open_browser=True)
+            res = api.oauth_login(Mobileclient.FROM_MAC_ADDRESS)
         print ('----------------------------------------------------')
         if (not res):
             print 'Login failed. Try again or press ctrl+c to cancel.'
