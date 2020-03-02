@@ -6,7 +6,7 @@ A simple python script for saving your music library in CSV format
 ___
 
 ######Depends on:
-- Python 2.7.x (python 3 compatability untested)
+- Python 2.7.x or Python 3.x
 - [gmusicapi](https://github.com/simon-weber/Unofficial-Google-Music-API)
 
 ___

@@ -5,8 +5,16 @@ from operator             import itemgetter
 from gmusicapi.exceptions import NotLoggedIn
 import getpass, os.path
 import sys, getopt
+if sys.version_info < (3, 0):
+    reload(sys)
+    sys.setdefaultencoding("utf-8")
 """"(CallFailure, ParseException, ValidationException,
     AlreadyLoggedIn, NotLoggedIn)"""
+
+# Fix Python 2.x.
+try: input = raw_input
+except NameError: pass
+
 #GLOBAL VARS
 api = Mobileclient()
 content = []
@@ -19,21 +27,21 @@ helpString = ("usage: gmusic-csv [option]\noptions:"
 
 class Credintials(object):
     def login(self, *args):
-        print ('\n===================================================='
-            + '\nPlease log in. Password will not be stored.'
-            + '\nSecondary authentication users need an app-specific \npassword.'
-            + '\n----------------------------------------------------')
-        res = api.login(
-            raw_input('\tusername: '),
-            getpass.getpass('\tpassword: '),
-            api.FROM_MAC_ADDRESS)
+        res = api.oauth_login(Mobileclient.FROM_MAC_ADDRESS)
+        if (not res):
+            print ('\n===================================================='
+                + '\nPlease log in. Credentials will be saved as'
+                + '\n' + Mobileclient.OAUTH_FILEPATH + '.'
+                + '\n----------------------------------------------------')
+            Mobileclient.perform_oauth(storage_filepath=Mobileclient.OAUTH_FILEPATH, open_browser=True)
+            res = api.oauth_login(Mobileclient.FROM_MAC_ADDRESS)
         print ('----------------------------------------------------')
         if (not res):
-            print 'Login failed. Try again or press ctrl+c to cancel.'
+            print ('Login failed. Try again or press ctrl+c to cancel.')
             Credintials.login(self, *args)
             return
         else:
-            print 'Login successful!\nnow performing selected or default option...'
+            print ('Login successful!\nnow performing selected or default option...')
         print ('====================================================')
 
 class Library(object):
@@ -44,9 +52,9 @@ class Library(object):
             tempList = api.get_all_songs()
             for x in range(len(tempList)):
                 gatherList = {
-                    "album":       tempList[x].get('album').encode('utf-8', errors='ignore'),
-                    "artist":      tempList[x].get('artist').encode('utf-8', errors='ignore'),
-                    "name":        tempList[x].get('title').encode('utf-8', errors='ignore'),
+                    "album":       tempList[x].get('album'),
+                    "artist":      tempList[x].get('artist'),
+                    "name":        tempList[x].get('title'),
                     "trackNumber": tempList[x].get('trackNumber'),
                     "playCount":   tempList[x].get('playCount')
                     }
@@ -63,9 +71,9 @@ class Library(object):
             allSongsDict = dict()
             for x in range(len(allSongs)):
                 gatherList = {
-                    "album":       allSongs[x].get('album').encode('utf-8', errors='ignore'),
-                    "artist":      allSongs[x].get('artist').encode('utf-8', errors='ignore'),
-                    "name":        allSongs[x].get('title').encode('utf-8', errors='ignore'),
+                    "album":       allSongs[x].get('album'),
+                    "artist":      allSongs[x].get('artist'),
+                    "name":        allSongs[x].get('title'),
                     "trackNumber": allSongs[x].get('trackNumber'),
                     "playCount":   allSongs[x].get('playCount')
                     }
@@ -88,12 +96,12 @@ class WriteOut(object):
         if "." in filename:
             filename = filename.split(".")[0]
         elif filename == "":
-            filename = raw_input('save file as: ')
+            filename = input('save file as: ')
         temp = sorted(content, key = itemgetter('trackNumber'))
         temp = sorted(temp,    key = itemgetter('album'))
         temp = sorted(temp,    key = itemgetter('artist'))
 
-        # filename = raw_input('save file as (do not include .csv or any extension!)\n: ')
+        # filename = input('save file as (do not include .csv or any extension!)\n: ')
         if os.path.exists(str(filename)+'.csv'):
             print (filename, ' exists already. Choose another file name.')
             WriteOut.writeToFile(self, filename)
@@ -142,7 +150,7 @@ def main(argv):
         WriteOut().writeToFile(filename)
         print ('====================================================')
     except KeyboardInterrupt:
-        print "\nShutdown requested...exiting"
+        print ("\nShutdown requested...exiting")
 
 if __name__ == '__main__':
     main(sys.argv[1:])
